@@ -1,9 +1,11 @@
 const express = require("express");
 
 const app = express();
-const port = 3000;
+const port = 4000;
 
 app.get("/", (req, res, next) => {
+  // mimic an error by throwing an error to break the app!
+  throw new Error('Something went wrong');
   res.send("Welcome to main route!");
 });
 
