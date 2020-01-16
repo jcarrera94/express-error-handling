@@ -15,16 +15,28 @@ app.get("/about", (req, res, next) => {
 
 // this matches all routes and all methods
 app.use((req, res, next) => {
-  res.status(404).send({
-    status: 404,
-    error: 'Not found'
-  });
+  const error = new Error("Not found");
+  error.status = 404;
+  next(error);
 });
 
 // error handler middleware
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).send('Something Broke!');
+app.use((error, req, res, next) => {
+  res.status(error.status || 500).send({
+    error: {
+      status: error.status || 500,
+      message: error.message || 'Internal Server Error',
+    },
+  });
 });
+
+/* 
+If you are serving static pages instead of sending JSON response, the logic is still the same.
+
+app.use((error, req, res, next) => {
+ console.error(error); // log an error
+ res.render(‘errorPage’) // Renders an error page to user!
+}); 
+*/
 
 app.listen(port, () => console.log(`App listening on port: ${port}`));
